@@ -1,6 +1,8 @@
-import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
+import { ApolloClient, InMemoryCache, from } from '@apollo/client'; // Removed createHttpLink
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
+// Explicitly import from the module file to help Vite resolve it
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 
 // Log any GraphQL errors or network errors
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -13,9 +15,13 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.error(`[Network error]: ${networkError}`);
 });
 
-const httpLink = createHttpLink({
-  uri: 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev/graphql',
-  credentials: 'include'
+// Use createUploadLink instead of createHttpLink for file uploads
+const uploadLink = createUploadLink({
+  uri: 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev/graphql', // Same URI
+  credentials: 'include', // Keep credentials setting if needed
+  headers: { // Add this header for apollo-upload-client
+    "Apollo-Require-Preflight": "true"
+  }
 });
 
 // Add authentication headers
@@ -33,7 +39,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  link: from([errorLink, authLink, httpLink]),
+  link: from([errorLink, authLink, uploadLink]), // Use uploadLink here
   cache: new InMemoryCache(),
   connectToDevTools: true,
 });

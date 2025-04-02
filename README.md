@@ -86,6 +86,8 @@ npm run dev
   - Chỉnh sửa tour (chỉ admin và quản lý)
   - Xóa tour (chỉ admin và quản lý)
 - **Tìm kiếm:** Lọc tour theo tên và khoảng giá
+- **Upload Ảnh:** Cho phép quản lý tải lên ảnh đại diện cho tour
+- **Hiển thị Ảnh:** Hiển thị ảnh tour trong danh sách và chi tiết
 
 ## Cấu Trúc Dự Án
 ### Backend (`server/`)
@@ -100,10 +102,12 @@ server/
 ├── graphql/              # Schema và resolver GraphQL
 │   ├── authentication.js # Schema & resolver xác thực
 │   ├── schema.js         # Schema chính
-│   └── tours.js          # Schema & resolver quản lý tour
+│   ├── tours.js          # Schema & resolver quản lý tour
+│   └── upload.js         # Schema & resolver upload ảnh (Mới)
 ├── middleware/           # Middleware Express
 │   └── auth.js           # Middleware xác thực
 ├── migrations/           # Cập nhật dữ liệu ban đầu
+├── img/                  # Thư mục chứa ảnh tour đã upload (Mới)
 ├── index.js              # Điểm khởi chạy ứng dụng
 └── package.json          # Thư viện và script
 ```
@@ -147,6 +151,7 @@ frontend/
 - `createTour(tourInput: TourInput!)`: Tạo tour mới
 - `updateTour(id: ID!, tourInput: TourUpdateInput!)`: Cập nhật tour
 - `deleteTour(id: ID!)`: Xóa tour
+- `upload(file: File!)`: Tải lên một tệp ảnh và trả về tên tệp duy nhất (Mới)
 
 ## Ghi Chú Phát Triển
 - Frontend sử dụng React Router để điều hướng
@@ -159,4 +164,3 @@ frontend/
 - Nếu gặp lỗi CORS, đảm bảo backend cho phép frontend truy cập
 - Nếu xác thực thất bại, kiểm tra giá trị `JWT_SECRET` trong `.env`
 - Nếu gặp lỗi kết nối database, kiểm tra chuỗi kết nối `MONGO_URI`
-

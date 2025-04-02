@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import { typeDef as tours, resolvers as toursResolvers } from './tours.js';
 import { typeDef as authentication, resolvers as authResolvers } from './authentication.js';
+import { typeDef as uploadTypeDef, resolvers as uploadResolvers } from './upload.js'; // Added upload import
 
 // Base Query and Mutation types
 const query = `
@@ -15,8 +16,8 @@ const query = `
   }
 `;
 
-const typeDefs = [query, tours, authentication];
-const resolvers = _.merge({}, toursResolvers, authResolvers);
+const typeDefs = [query, tours, authentication, uploadTypeDef]; // Added uploadTypeDef
+const resolvers = _.merge({}, toursResolvers, authResolvers, uploadResolvers); // Added uploadResolvers
 
 const schema = createSchema({
   typeDefs: typeDefs,

@@ -7,6 +7,7 @@ const typeDef = `
     name: String!
     price: Float!
     description: String!
+    imageFilename: String # Added field
     createdAt: String!
     isActive: Boolean!
   }
@@ -15,6 +16,7 @@ const typeDef = `
     name: String!
     price: Float!
     description: String!
+    imageFilename: String # Added field
     isActive: Boolean
   }
 
@@ -22,6 +24,7 @@ const typeDef = `
     name: String
     price: Float
     description: String
+    imageFilename: String # Added field
     isActive: Boolean
   }
 

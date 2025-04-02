@@ -2,11 +2,18 @@ import express from 'express';
 import { createYoga } from 'graphql-yoga';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import path from 'path'; // Added path import
+import { fileURLToPath } from 'url'; // Added url import
+import { dirname } from 'path'; // Added dirname import
 import connectDB from './data/init.js';
 import schema from './graphql/schema.js';
 import config from './config.js';
 import UserRepository from './data/userRepo.js';
 import TourRepository from './data/tourRepo.js';
+
+const __filename = fileURLToPath(import.meta.url); // Added
+const __dirname = dirname(__filename); // Added
+const imgDir = path.join(__dirname, 'img'); // Added path to img directory
 
 // Connect to MongoDB
 connectDB();
@@ -26,8 +33,12 @@ app.use(cors({
 
 app.use(express.json());
 
+// Serve static files from the /img directory
+console.log(`Serving static files from: ${imgDir}`); // Log the directory path
+app.use('/img', express.static(imgDir)); // Added static file serving
+
 // Create GraphQL Yoga server with context
-const yoga = createYoga({ 
+const yoga = createYoga({
   schema,
   context: async ({ request }) => {
     // Get the user token from the headers

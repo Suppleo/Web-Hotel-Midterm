@@ -39,6 +39,11 @@ export default function TourDetail() {
 
   const tour = data.tour;
 
+  // Construct image URL using the known backend base URL
+  // TODO: Move this base URL to an environment variable for better configuration
+  const backendBaseUrl = 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev';
+  const imageUrl = tour.imageFilename ? `${backendBaseUrl}/img/${tour.imageFilename}` : null;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -76,6 +81,19 @@ export default function TourDetail() {
       </div>
 
       <Card>
+        {/* Display Image */}
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={tour.name}
+            className="w-full h-64 object-cover rounded-t-lg" // Image styling
+            onError={(e) => { e.target.style.display = 'none'; /* Hide on error */ }}
+          />
+        ) : (
+          <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500 rounded-t-lg">
+            No Image Available
+          </div> // Placeholder
+        )}
         <CardHeader>
           <CardTitle className="text-2xl">{tour.name}</CardTitle>
           <CardDescription>

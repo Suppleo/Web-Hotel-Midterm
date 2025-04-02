@@ -7,6 +7,7 @@ export const GET_TOURS = gql`
       name
       price
       description
+      imageFilename # Added
       createdAt
       isActive
     }
@@ -20,6 +21,7 @@ export const GET_TOUR = gql`
       name
       price
       description
+      imageFilename # Added
       createdAt
       isActive
     }
@@ -33,6 +35,7 @@ export const SEARCH_TOURS = gql`
       name
       price
       description
+      imageFilename # Added
       createdAt
       isActive
     }
@@ -46,6 +49,7 @@ export const CREATE_TOUR = gql`
       name
       price
       description
+      imageFilename # Added
       createdAt
       isActive
     }
@@ -59,6 +63,7 @@ export const UPDATE_TOUR = gql`
       name
       price
       description
+      imageFilename # Added
       createdAt
       isActive
     }
@@ -68,5 +73,12 @@ export const UPDATE_TOUR = gql`
 export const DELETE_TOUR = gql`
   mutation DeleteTour($id: ID!) {
     deleteTour(id: $id)
+  }
+`;
+
+// Added for photo feature
+export const UPLOAD_FILE = gql`
+  mutation UploadFile($file: File!) {
+    upload(file: $file) # Returns the filename string or null
   }
 `;

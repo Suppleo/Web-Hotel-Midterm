@@ -14,6 +14,11 @@ const TourSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  imageFilename: { // Added for photo feature
+    type: String,
+    required: false, // Not required initially
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -25,4 +30,3 @@ const TourSchema = new mongoose.Schema({
 });
 
 export default mongoose.model('Tour', TourSchema);
-

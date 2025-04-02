@@ -81,13 +81,34 @@ export default function TourList() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {data.tours.map((tour) => (
-          <Card key={tour.id} className="overflow-hidden">
-            <CardContent className="p-0">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-2">{tour.name}</h3>
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2">{tour.description}</p>
-                <div className="flex justify-between items-center">
+        {data.tours.map((tour) => {
+          // Construct image URL using the known backend base URL
+          // TODO: Move this base URL to an environment variable for better configuration
+          const backendBaseUrl = 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev';
+          const imageUrl = tour.imageFilename ? `${backendBaseUrl}/img/${tour.imageFilename}` : null;
+
+          return (
+            <Card key={tour.id} className="overflow-hidden flex flex-col"> {/* Added flex flex-col */}
+              {/* Image Section */}
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={tour.name}
+                  className="w-full h-48 object-cover" // Fixed height, object-cover
+                  onError={(e) => { e.target.style.display = 'none'; /* Hide if image fails to load */ }}
+                />
+              ) : (
+                <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500">
+                  No Image
+                </div> // Placeholder
+              )}
+              {/* Content Section */}
+              <CardContent className="p-6 flex-grow flex flex-col justify-between"> {/* Added flex-grow and flex for spacing */}
+                <div> {/* Wrap text content */}
+                  <h3 className="text-lg font-semibold mb-2">{tour.name}</h3>
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-2">{tour.description}</p>
+                </div>
+                <div className="flex justify-between items-center mt-auto"> {/* Added mt-auto */}
                   <span className="text-lg font-bold text-indigo-600">{formatPrice(tour.price)}</span>
                   <Link
                     to={`/tours/${tour.id}`}
@@ -96,10 +117,10 @@ export default function TourList() {
                     View Details
                   </Link>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent> {/* Moved CardContent closing tag here */}
+            </Card>
+          ); // Added closing parenthesis for return
+        })} {/* Added closing curly brace for map */}
       </div>
       
       {data.tours.length === 0 && (
