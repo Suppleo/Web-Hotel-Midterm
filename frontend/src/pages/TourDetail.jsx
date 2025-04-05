@@ -4,10 +4,12 @@ import { GET_TOUR, DELETE_TOUR, GET_TOURS } from '../graphql/tours';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog';
+import { useAuth } from '../context/AuthContext';
 
 export default function TourDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const { loading, error, data } = useQuery(GET_TOUR, {
     variables: { id },
@@ -53,32 +55,37 @@ export default function TourDetail() {
         >
           &larr; Back to Tours
         </Link>
-        <div className="flex space-x-2">
-          <Link
-            to={`/tours/edit/${tour.id}`}
-            className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Edit Tour
-          </Link>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive">Delete Tour</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the tour.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => deleteTour()}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+        
+        {/* Only show edit and delete buttons for admin and manager roles */}
+        {user && (user.role === 'admin' || user.role === 'manager') && (
+          <div className="flex space-x-2">
+            <Link
+              to={`/tours/edit/${tour.id}`}
+              className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Edit Tour
+            </Link>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">Delete Tour</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete the tour.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => deleteTour()}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
       </div>
+
 
       <Card>
         {/* Display Image */}
@@ -95,7 +102,7 @@ export default function TourDetail() {
           </div> // Placeholder
         )}
         <CardHeader>
-          <CardTitle className="text-2xl">{tour.name}</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl">{tour.name}</CardTitle>
           <CardDescription>
             Created on {formatDate(tour.createdAt)}
             {tour.isActive ? (

@@ -74,6 +74,8 @@ export default function Login() {
               />
             </div>
           </CardContent>
+
+          <div className="pt-4">
           <CardFooter>
             <Button 
               type="submit" 
@@ -83,6 +85,8 @@ export default function Login() {
               {loginLoading ? 'Logging in...' : 'Login'}
             </Button>
           </CardFooter>
+
+          </div>
         </form>
       </Card>
     </div>

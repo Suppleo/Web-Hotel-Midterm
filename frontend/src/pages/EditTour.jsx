@@ -217,11 +217,11 @@ export default function EditTour() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Edit Tour</CardTitle>
+          <CardTitle className="text-2xl sm:text-3xl font-bold">Edit Tour</CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="name">Tour Name</Label>
               <Input
                 id="name"
@@ -233,7 +233,7 @@ export default function EditTour() {
               {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
             
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="price">Price (VND)</Label>
               <Input
                 id="price"
@@ -246,7 +246,7 @@ export default function EditTour() {
               {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
             </div>
             
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
@@ -260,7 +260,7 @@ export default function EditTour() {
             </div>
 
             {/* Image Upload Field */}
-            <div>
+            <div className="space-y-1">
               <Label htmlFor="imageFile">Tour Image (Optional: Upload new to replace)</Label>
               <Input
                 id="imageFile"
@@ -277,7 +277,7 @@ export default function EditTour() {
               {previewUrl && (
                 <div className="mt-4">
                   <Label>Image Preview:</Label>
-                  <img src={previewUrl} alt="Preview" className="mt-2 max-h-40 w-auto border rounded" />
+                  <img src={previewUrl} alt="Preview" className="mt-1 max-h-40 w-auto border rounded" />
                 </div>
               )}
             </div>
