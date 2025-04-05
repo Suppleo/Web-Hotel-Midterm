@@ -16,6 +16,31 @@
 
 ## Hướng Dẫn Cài Đặt
 
+### Tải Mongo
+Tải về image của mongodb:
+```sh
+docker pull mongo
+```
+
+Kiểm tra image đã có chưa:
+```sh
+docker images
+```
+Từ image mongodb, tạo ra container và đặt tên db:
+```sh
+docker create --name db -p 27017:27017 mongo
+```
+
+Kiểm tra danh sách các container:
+```sh
+docker ps -a
+```
+
+Chạy container:
+```sh
+docker start db
+```
+
 ### Cấu Hình Backend
 Đi đến thư mục `server`:
 ```sh
