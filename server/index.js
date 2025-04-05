@@ -22,7 +22,7 @@ connectDB();
 const app = express();
 
 // Get the Codespace name from environment or use a default
-const codespacePrefix = process.env.CODESPACE_NAME || 'jubilant-space-acorn-wrg46x79wr6cgqqg';
+const codespacePrefix = process.env.CODESPACE_NAME || 'upgraded-meme-r4gr5xg96vrg3prxv';
 const frontendUrl = `https://${codespacePrefix}-5173.app.github.dev`;
 
 // Apply CORS middleware with specific configuration

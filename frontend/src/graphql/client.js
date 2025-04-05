@@ -17,7 +17,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 
 // Use createUploadLink instead of createHttpLink for file uploads
 const uploadLink = createUploadLink({
-  uri: 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev/graphql', // Same URI
+  uri: 'https://upgraded-meme-r4gr5xg96vrg3prxv-4000.app.github.dev/graphql', // Same URI
   credentials: 'include', // Keep credentials setting if needed
   headers: { // Add this header for apollo-upload-client
     "Apollo-Require-Preflight": "true"
