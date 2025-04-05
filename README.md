@@ -30,7 +30,7 @@ npm install
 Tạo tệp `.env` trong thư mục `server` với nội dung:
 ```env
 PORT=4000
-MONGO_URI=mongodb://localhost:27017/tour_management
+MONGO_URI=mongodb://localhost:27017/hotel_management
 JWT_SECRET=your_jwt_secret_key
 ```
 

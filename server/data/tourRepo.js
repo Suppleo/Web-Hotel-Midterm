@@ -27,8 +27,8 @@ const TourRepository = {
     const {
       page = 1,
       limit = 10,
-      sortBy = 'name',
-      sortOrder = 'asc',
+      sortBy = 'none', // Changed default to 'none'
+      sortOrder = 'asc', // Changed default to 'asc'
       minPrice,
       maxPrice,
       searchTerm,
@@ -36,9 +36,12 @@ const TourRepository = {
 
     const query = {};
 
-    // Apply search term filter (searching the 'name' field)
+    // Apply search term filter (searching both name and description fields)
     if (searchTerm) {
-      query.name = { $regex: searchTerm, $options: 'i' };
+      query.$or = [
+        { name: { $regex: searchTerm, $options: 'i' } },
+        { description: { $regex: searchTerm, $options: 'i' } }
+      ];
     }
 
     // Apply price filter
@@ -52,20 +55,26 @@ const TourRepository = {
 
     // Determine sort order
     let sort = {};
-    const validSortFields = ['name', 'price']; // Removed createdAt
-    let sortField = validSortFields.includes(sortBy) ? sortBy : 'name'; // Default to name
-    sort = { [sortField]: sortOrder === 'asc' ? 1 : -1 };
+    const validSortFields = ['name', 'price', 'none']; // Added 'none'
+    let sortField = validSortFields.includes(sortBy) ? sortBy : 'none'; // Default to 'none'
+    
+    // Only set sort if not 'none'
+    if (sortField !== 'none') {
+      sort = { [sortField]: sortOrder === 'asc' ? 1 : -1 };
+    }
 
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
 
     try {
-      // Get all tours for the query without pagination
-      let tours = await Tour.find(query);
+      let tours;
       
-      // If sorting by name, use localeCompare for proper Vietnamese sorting
       if (sortField === 'name') {
-        tours = tours.sort((a, b) => {
+        // Get all tours for the query without pagination for name sorting
+        let allTours = await Tour.find(query);
+        
+        // Use localeCompare for proper Vietnamese sorting
+        allTours = allTours.sort((a, b) => {
           // Use Vietnamese locale for proper sorting of Vietnamese characters
           return sortOrder === 'asc' 
             ? a.name.localeCompare(b.name, 'vi')
@@ -73,13 +82,17 @@ const TourRepository = {
         });
         
         // Apply pagination manually after sorting
-        tours = tours.slice(skip, skip + limit);
+        tours = allTours.slice(skip, skip + limit);
       } else {
-        // For other fields, use MongoDB's built-in sorting
-        tours = await Tour.find(query)
-          .sort(sort)
-          .skip(skip)
-          .limit(limit);
+        // For other fields or no sorting, use MongoDB's built-in sorting or no sorting
+        const findQuery = Tour.find(query);
+        
+        // Only apply sort if sortField is not 'none'
+        if (sortField !== 'none') {
+          findQuery.sort(sort);
+        }
+        
+        tours = await findQuery.skip(skip).limit(limit);
       }
 
       // Execute query to get total count for pagination

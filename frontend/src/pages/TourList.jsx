@@ -1,23 +1,27 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { GET_TOURS } from '../graphql/tours'; // SEARCH_TOURS removed
+import { GET_TOURS } from '../graphql/tours';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { gql } from '@apollo/client';
 
 export default function TourList() {
   // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(3); // Tours per page
   // Sorting state
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [sortOrder, setSortOrder] = useState('desc');
-  // Filtering state
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
-  // Search state
+  const [sortBy, setSortBy] = useState('none');
+  const [sortOrder, setSortOrder] = useState('asc');
+  
+  // Form state (what user types)
+  const [formMinPrice, setFormMinPrice] = useState('');
+  const [formMaxPrice, setFormMaxPrice] = useState('');
+  const [formSearchTerm, setFormSearchTerm] = useState('');
+  
+  // Query state (what we send to the server)
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   // GraphQL query with variables
@@ -33,27 +37,6 @@ export default function TourList() {
       ...(searchTerm && { searchTerm }),
     },
   });
-
-  // // Add this simple query for testing
-  // const SIMPLE_TOURS_QUERY = gql`
-  // query {
-  //   tours {
-  //     tours {
-  //       id
-  //       name
-  //       price
-  //       description
-  //       imageFilename
-  //       createdAt
-  //       isActive
-  //     }
-  //     totalCount
-  //   }
-  // }
-  // `;
-
-  // // Then in your component, temporarily use this query instead:
-  // const { loading, error, data } = useQuery(SIMPLE_TOURS_QUERY);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -72,17 +55,27 @@ export default function TourList() {
     setSortOrder(newSortOrder);
   };
 
-  const handleMinPriceChange = (e) => {
-    setMinPrice(e.target.value);
+  const handleFormMinPriceChange = (e) => {
+    setFormMinPrice(e.target.value);
   };
 
-  const handleMaxPriceChange = (e) => {
-    setMaxPrice(e.target.value);
+  const handleFormMaxPriceChange = (e) => {
+    setFormMaxPrice(e.target.value);
   };
 
-  const handleSearchTermChange = (e) => {
-    setSearchTerm(e.target.value);
-    setPage(1); // Reset to first page on new search
+  const handleFormSearchTermChange = (e) => {
+    setFormSearchTerm(e.target.value);
+  };
+  
+  // New function to handle search button click
+  const handleSearch = () => {
+    // Update query parameters
+    setMinPrice(formMinPrice ? parseFloat(formMinPrice) : null);
+    setMaxPrice(formMaxPrice ? parseFloat(formMaxPrice) : null);
+    setSearchTerm(formSearchTerm);
+    
+    // Reset to first page
+    setPage(1);
   };
 
   if (loading) return <p className="text-center py-10">Loading...</p>;
@@ -102,12 +95,12 @@ export default function TourList() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tour Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tour Name/Description</label>
               <Input
                 type="text"
-                placeholder="Search by name"
-                value={searchTerm}
-                onChange={handleSearchTermChange}
+                placeholder="Search by name or description"
+                value={formSearchTerm}
+                onChange={handleFormSearchTermChange}
               />
             </div>
             <div>
@@ -115,8 +108,8 @@ export default function TourList() {
               <Input
                 type="number"
                 placeholder="Min price"
-                value={minPrice}
-                onChange={handleMinPriceChange}
+                value={formMinPrice}
+                onChange={handleFormMinPriceChange}
               />
             </div>
             <div>
@@ -124,9 +117,17 @@ export default function TourList() {
               <Input
                 type="number"
                 placeholder="Max price"
-                value={maxPrice}
-                onChange={handleMaxPriceChange}
+                value={formMaxPrice}
+                onChange={handleFormMaxPriceChange}
               />
+            </div>
+            <div className="flex items-end">
+              <Button 
+                onClick={handleSearch}
+                className="w-full"
+              >
+                Search
+              </Button>
             </div>
           </div>
         </CardContent>
@@ -142,6 +143,7 @@ export default function TourList() {
             value={sortBy}
             onChange={(e) => handleSortChange(e.target.value)}
           >
+            <option value="none">None</option>
             <option value="name">Name</option>
             <option value="price">Price</option>
           </select>

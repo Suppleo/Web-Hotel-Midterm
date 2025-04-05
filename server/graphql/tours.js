@@ -39,8 +39,8 @@ const typeDef = `
     tours(
       page: Int = 1
       limit: Int = 10
-      sortBy: String = "createdAt"
-      sortOrder: String = "desc"
+      sortBy: String = "none"
+      sortOrder: String = "asc"
       minPrice: Float
       maxPrice: Float
       searchTerm: String
