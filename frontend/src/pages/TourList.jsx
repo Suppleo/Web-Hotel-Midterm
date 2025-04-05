@@ -167,7 +167,7 @@ export default function TourList() {
         {tours.map((tour) => {
           // Construct image URL using the known backend base URL
           // TODO: Move this base URL to an environment variable for better configuration
-          const backendBaseUrl = 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev';
+          const backendBaseUrl = import.meta.env.VITE_BACKEND_URL;
           const imageUrl = tour.imageFilename ? `${backendBaseUrl}/img/${tour.imageFilename}` : null;
 
           return (

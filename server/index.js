@@ -11,6 +11,9 @@ import config from './config.js';
 import UserRepository from './data/userRepo.js';
 import TourRepository from './data/tourRepo.js';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url); // Added
 const __dirname = dirname(__filename); // Added
 const imgDir = path.join(__dirname, 'img'); // Added path to img directory
@@ -22,7 +25,7 @@ connectDB();
 const app = express();
 
 // Get the Codespace name from environment or use a default
-const codespacePrefix = process.env.CODESPACE_NAME || 'jubilant-space-acorn-wrg46x79wr6cgqqg';
+const codespacePrefix = process.env.CODESPACE_NAME;
 const frontendUrl = `https://${codespacePrefix}-5173.app.github.dev`;
 
 // Apply CORS middleware with specific configuration

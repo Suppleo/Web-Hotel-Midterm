@@ -1,5 +1,12 @@
 # Hệ Thống Quản Lý Tour
 
+## Thành viên
+| Họ tên | MSSV |
+|--------------|----------|
+| Nguyễn Ngọc Thạch  | 2201700077     |
+| Hoàng Anh          | 2201700173     |
+| Lê Đức Long        | 2201700193     |
+
 ## Tổng Quan
 Đây là một ứng dụng web full-stack để quản lý tour du lịch. Hệ thống cho phép người dùng xem, tạo, chỉnh sửa và xóa tour dựa trên vai trò của họ. Hệ thống có tính năng xác thực và phân quyền với các vai trò người dùng khác nhau (admin, quản lý, khách hàng).
 
@@ -54,6 +61,7 @@ npm install
 
 Tạo tệp `.env` trong thư mục `server` với nội dung:
 ```env
+CODESPACE_NAME=your-codespace-name
 PORT=4000
 MONGO_URI=mongodb://localhost:27017/hotel_management
 JWT_SECRET=your_jwt_secret_key
@@ -80,6 +88,11 @@ cd frontend
 Cài đặt các thư viện cần thiết:
 ```sh
 npm install
+```
+
+Tạo tệp `.env` trong thư mục `frontend` với nội dung:
+```env
+VITE_BACKEND_URL=https://your-codespace-name-4000.app.github.dev
 ```
 
 Cập nhật cấu hình Apollo Client trong `src/graphql/client.js` để trỏ đến URL của server GraphQL.
@@ -118,22 +131,22 @@ npm run dev
 ### Backend (`server/`)
 ```
 server/
-├── config.js             # Cấu hình ứng dụng
 ├── data/                 # Truy cập dữ liệu
+│   ├── models/           # Mongoose models 
 │   ├── init.js           # Kết nối cơ sở dữ liệu
-│   ├── models/           # Mongoose models
-│   ├── mongoRepo.js      # Repository quản lý tour
+│   ├── tourRepo.js       # Repository quản lý tour
 │   └── userRepo.js       # Repository quản lý người dùng
 ├── graphql/              # Schema và resolver GraphQL
-│   ├── authentication.js # Schema & resolver xác thực
-│   ├── schema.js         # Schema chính
-│   ├── tours.js          # Schema & resolver quản lý tour
-│   └── upload.js         # Schema & resolver upload ảnh (Mới)
+├── img/                  # Thư mục chứa ảnh tour đã upload
 ├── middleware/           # Middleware Express
 │   └── auth.js           # Middleware xác thực
 ├── migrations/           # Cập nhật dữ liệu ban đầu
-├── img/                  # Thư mục chứa ảnh tour đã upload (Mới)
+├── .env_sample           # Mẫu biến môi trường
+├── .gitignore            # Cấu hình Git ignore
+├── config.js             # Cấu hình ứng dụng
 ├── index.js              # Điểm khởi chạy ứng dụng
+├── migrate-mongo-config.js # Cấu hình migration MongoDB
+├── package-lock.json     # Danh sách dependency chi tiết
 └── package.json          # Thư viện và script
 ```
 
@@ -142,6 +155,7 @@ server/
 frontend/
 ├── public/               # Tệp tĩnh
 ├── src/                  # Mã nguồn chính
+│   ├── assets/           # Tài nguyên tĩnh (hình ảnh, font chữ)
 │   ├── components/       # Các component dùng lại
 │   │   ├── Layout.jsx    # Component bố cục chính
 │   │   └── ui/           # Component giao diện
@@ -159,10 +173,19 @@ frontend/
 │   │   ├── Login.jsx
 │   │   ├── NoPage.jsx
 │   │   └── TourDetail.jsx
+│   ├── App.css           # CSS cho component App
 │   ├── App.jsx           # Component chính
 │   ├── index.css         # CSS toàn cục
 │   └── main.jsx          # Điểm khởi chạy ứng dụng
-└── package.json          # Thư viện và script
+├── .gitignore            # Cấu hình Git ignore
+├── components.json       # Cấu hình components
+├── eslint.config.js      # Cấu hình ESLint
+├── index.html            # File HTML gốc
+├── jsconfig.json         # Cấu hình JavaScript
+├── package-lock.json     # Danh sách dependency chi tiết
+├── package.json          # Thư viện và script
+├── README.md             # Tài liệu dự án
+└── vite.config.js        # Cấu hình Vite
 ```
 
 ## API Endpoints

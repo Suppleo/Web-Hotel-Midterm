@@ -38,7 +38,7 @@ export default function EditTour() {
       // Set initial preview URL if an image exists
       if (tour.imageFilename) {
         // Assuming images are served from /img/ at the server root
-        const backendBaseUrl = 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev';
+        const backendBaseUrl = import.meta.env.VITE_BACKEND_URL;
         const imageUrl = tour.imageFilename ? `${backendBaseUrl}/img/${tour.imageFilename}` : null;
         setPreviewUrl(imageUrl);
       }
