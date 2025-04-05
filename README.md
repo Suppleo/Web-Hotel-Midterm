@@ -59,7 +59,7 @@ Cài đặt các thư viện cần thiết:
 npm install
 ```
 
-Tạo tệp `.env` trong thư mục `server` với nội dung:
+Thay đổi tệp `.env_sample` thành tệp `.env` trong thư mục `server` với nội dung:
 ```env
 CODESPACE_NAME=your-codespace-name
 PORT=4000
@@ -90,7 +90,7 @@ Cài đặt các thư viện cần thiết:
 npm install
 ```
 
-Tạo tệp `.env` trong thư mục `frontend` với nội dung:
+Thay đổi tệp `.env_sample` thành tệp `.env` trong thư mục `frontend` với nội dung:
 ```env
 VITE_BACKEND_URL=https://your-codespace-name-4000.app.github.dev
 ```
