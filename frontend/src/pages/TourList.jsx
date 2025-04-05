@@ -37,6 +37,7 @@ export default function TourList() {
       ...(searchTerm && { searchTerm }),
     },
   });
+  
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
@@ -83,8 +84,24 @@ export default function TourList() {
 
   const { tours, totalCount } = data?.tours || { tours: [], totalCount: 0 }; // Handle null data
 
+  // Calculate items on current page
+  const itemsOnCurrentPage = tours?.length || 0;
+  
   // Calculate total number of pages
   const totalPages = Math.ceil(totalCount / limit);
+
+  // Navigation handlers
+  const goToFirstPage = () => setPage(1);
+  const goToLastPage = () => setPage(totalPages);
+  const goToPrevPage = () => setPage(Math.max(1, page - 1));
+  const goToNextPage = () => setPage(Math.min(totalPages, page + 1));
+  
+  // Handle items per page change
+  const handleLimitChange = (newLimit) => {
+    setLimit(parseInt(newLimit));
+    // Reset to first page when changing items per page
+    setPage(1);
+  };
 
   return (
     <div>
@@ -212,25 +229,70 @@ export default function TourList() {
         </div>
       )}
 
-      {/* Pagination Controls */}
-      <div className="flex justify-center mt-8">
-        <Button
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1}
-          className="mr-2"
-        >
-          Previous
-        </Button>
-        <span>
-          Page {page} of {totalPages}
-        </span>
-        <Button
-          onClick={() => handlePageChange(page + 1)}
-          disabled={page === totalPages || totalPages === 0}
-          className="ml-2"
-        >
-          Next
-        </Button>
+      <div className="text-center mt-4 text-gray-600">
+        Showing {itemsOnCurrentPage} of {totalCount} tours
+      </div>
+
+      {/* Pagination Controls - Enhanced */}
+      <div className="flex flex-col md:flex-row justify-between items-center mt-8">
+        <div className="mb-4 md:mb-0">
+          <label htmlFor="itemsPerPage" className="mr-2">Items per page:</label>
+          <select
+            id="itemsPerPage"
+            className="border rounded px-2 py-1"
+            value={limit}
+            onChange={(e) => handleLimitChange(e.target.value)}
+          >
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+        
+        <div className="flex items-center">
+          <Button
+            onClick={goToFirstPage}
+            disabled={page === 1}
+            className="mr-1"
+            variant="outline"
+            size="sm"
+          >
+            First
+          </Button>
+          <Button
+            onClick={goToPrevPage}
+            disabled={page === 1}
+            className="mr-1"
+            variant="outline"
+            size="sm"
+          >
+            Previous
+          </Button>
+          
+          <span className="mx-2">
+            Page {page} of {totalPages}
+          </span>
+          
+          <Button
+            onClick={goToNextPage}
+            disabled={page === totalPages || totalPages === 0}
+            className="ml-1"
+            variant="outline"
+            size="sm"
+          >
+            Next
+          </Button>
+          <Button
+            onClick={goToLastPage}
+            disabled={page === totalPages || totalPages === 0}
+            className="ml-1"
+            variant="outline"
+            size="sm"
+          >
+            Last
+          </Button>
+        </div>
       </div>
     </div>
   );
