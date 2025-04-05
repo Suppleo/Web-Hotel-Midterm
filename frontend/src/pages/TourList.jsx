@@ -1,42 +1,97 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { GET_TOURS, SEARCH_TOURS } from '../graphql/tours';
+import { GET_TOURS } from '../graphql/tours'; // SEARCH_TOURS removed
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { gql } from '@apollo/client';
 
 export default function TourList() {
-  const [searchTerm, setSearchTerm] = useState('');
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(3); // Tours per page
+  // Sorting state
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
+  // Filtering state
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  
-  const { loading, error, data, refetch } = useQuery(GET_TOURS);
-  
-  const handleSearch = () => {
-    const criteria = {};
-    
-    if (searchTerm) {
-      criteria.name = searchTerm;
-    }
-    
-    if (minPrice) {
-      criteria.minPrice = parseFloat(minPrice);
-    }
-    
-    if (maxPrice) {
-      criteria.maxPrice = parseFloat(maxPrice);
-    }
-    
-    refetch({ criteria });
-  };
-  
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // GraphQL query with variables
+  const { loading, error, data } = useQuery(GET_TOURS, {
+    variables: {
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      // Only include these if they have values
+      ...(minPrice && { minPrice: parseFloat(minPrice) }),
+      ...(maxPrice && { maxPrice: parseFloat(maxPrice) }),
+      ...(searchTerm && { searchTerm }),
+    },
+  });
+
+  // // Add this simple query for testing
+  // const SIMPLE_TOURS_QUERY = gql`
+  // query {
+  //   tours {
+  //     tours {
+  //       id
+  //       name
+  //       price
+  //       description
+  //       imageFilename
+  //       createdAt
+  //       isActive
+  //     }
+  //     totalCount
+  //   }
+  // }
+  // `;
+
+  // // Then in your component, temporarily use this query instead:
+  // const { loading, error, data } = useQuery(SIMPLE_TOURS_QUERY);
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
+  // Handlers for state changes
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  const handleSortChange = (newSortBy) => {
+    setSortBy(newSortBy);
+  };
+
+  const handleSortOrderChange = (newSortOrder) => {
+    setSortOrder(newSortOrder);
+  };
+
+  const handleMinPriceChange = (e) => {
+    setMinPrice(e.target.value);
+  };
+
+  const handleMaxPriceChange = (e) => {
+    setMaxPrice(e.target.value);
+  };
+
+  const handleSearchTermChange = (e) => {
+    setSearchTerm(e.target.value);
+    setPage(1); // Reset to first page on new search
+  };
+
   if (loading) return <p className="text-center py-10">Loading...</p>;
   if (error) return <p className="text-center py-10 text-red-500">Error: {error.message}</p>;
+
+  const { tours, totalCount } = data?.tours || { tours: [], totalCount: 0 }; // Handle null data
+
+  // Calculate total number of pages
+  const totalPages = Math.ceil(totalCount / limit);
 
   return (
     <div>
@@ -52,7 +107,7 @@ export default function TourList() {
                 type="text"
                 placeholder="Search by name"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleSearchTermChange}
               />
             </div>
             <div>
@@ -61,7 +116,7 @@ export default function TourList() {
                 type="number"
                 placeholder="Min price"
                 value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
+                onChange={handleMinPriceChange}
               />
             </div>
             <div>
@@ -70,18 +125,44 @@ export default function TourList() {
                 type="number"
                 placeholder="Max price"
                 value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
+                onChange={handleMaxPriceChange}
               />
-            </div>
-            <div className="flex items-end">
-              <Button onClick={handleSearch} className="w-full">Search</Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Sorting Controls */}
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <label htmlFor="sortBy" className="mr-2">Sort by:</label>
+          <select
+            id="sortBy"
+            className="border rounded px-2 py-1"
+            value={sortBy}
+            onChange={(e) => handleSortChange(e.target.value)}
+          >
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="sortOrder" className="mr-2">Order:</label>
+          <select
+            id="sortOrder"
+            className="border rounded px-2 py-1"
+            value={sortOrder}
+            onChange={(e) => handleSortOrderChange(e.target.value)}
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      </div>
+
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {data.tours.map((tour) => {
+        {tours.map((tour) => {
           // Construct image URL using the known backend base URL
           // TODO: Move this base URL to an environment variable for better configuration
           const backendBaseUrl = 'https://jubilant-space-acorn-wrg46x79wr6cgqqg-4000.app.github.dev';
@@ -122,12 +203,33 @@ export default function TourList() {
           ); // Added closing parenthesis for return
         })} {/* Added closing curly brace for map */}
       </div>
-      
-      {data.tours.length === 0 && (
+
+      {tours.length === 0 && (
         <div className="text-center py-10">
           <p className="text-gray-500">No tours found. Try adjusting your search criteria.</p>
         </div>
       )}
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center mt-8">
+        <Button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+          className="mr-2"
+        >
+          Previous
+        </Button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <Button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages || totalPages === 0}
+          className="ml-2"
+        >
+          Next
+        </Button>
+      </div>
     </div>
   );
 }

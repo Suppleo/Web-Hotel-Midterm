@@ -1,18 +1,38 @@
 import { gql } from '@apollo/client';
 
 export const GET_TOURS = gql`
-  query GetTours {
-    tours {
-      id
-      name
-      price
-      description
-      imageFilename # Added
-      createdAt
-      isActive
+  query GetTours(
+    $page: Int = 1
+    $limit: Int = 10
+    $sortBy: String = "createdAt"
+    $sortOrder: String = "desc"
+    $minPrice: Float
+    $maxPrice: Float
+    $searchTerm: String
+  ) {
+    tours(
+      page: $page
+      limit: $limit
+      sortBy: $sortBy
+      sortOrder: $sortOrder
+      minPrice: $minPrice
+      maxPrice: $maxPrice
+      searchTerm: $searchTerm
+    ) {
+      tours {
+        id
+        name
+        price
+        description
+        imageFilename
+        createdAt
+        isActive
+      }
+      totalCount
     }
   }
 `;
+
 
 export const GET_TOUR = gql`
   query GetTour($id: ID!) {
@@ -21,21 +41,7 @@ export const GET_TOUR = gql`
       name
       price
       description
-      imageFilename # Added
-      createdAt
-      isActive
-    }
-  }
-`;
-
-export const SEARCH_TOURS = gql`
-  query SearchTours($criteria: TourSearchInput) {
-    searchTours(criteria: $criteria) {
-      id
-      name
-      price
-      description
-      imageFilename # Added
+      imageFilename
       createdAt
       isActive
     }
@@ -49,7 +55,7 @@ export const CREATE_TOUR = gql`
       name
       price
       description
-      imageFilename # Added
+      imageFilename
       createdAt
       isActive
     }
@@ -63,7 +69,7 @@ export const UPDATE_TOUR = gql`
       name
       price
       description
-      imageFilename # Added
+      imageFilename
       createdAt
       isActive
     }
@@ -79,6 +85,6 @@ export const DELETE_TOUR = gql`
 // Added for photo feature
 export const UPLOAD_FILE = gql`
   mutation UploadFile($file: File!) {
-    upload(file: $file) # Returns the filename string or null
+    upload(file: $file)
   }
 `;
